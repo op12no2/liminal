@@ -4,16 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Liminal Sequencer</title>
-  <link rel="stylesheet" href="liminal.css">
+  <link rel="stylesheet" href="led.css?next=1">
+  <link rel="stylesheet" href="transport.css?next=1">
+  <link rel="stylesheet" href="liminal.css?next=1">
 </head>
 <body>
-  <!-- Top transport bar -->
-  <div class="transport-bar">
-    <button class="transport-button" id="play-btn" title="Play">?</button>
-    <button class="transport-button" id="stop-btn" title="Stop">¦</button>
-    <button class="transport-button" id="record-btn" title="Record">?</button>
+  <div class="top-bar">
+    <div id="transport-container">
+    </div>
+  <div class="led-container" id="midi-led" style="margin-left: auto;">
   </div>
-
+  </div>
   <div class="main-content">
     <div class="canvas-area">
       <canvas id="seq-canvas"></canvas>
@@ -23,18 +24,22 @@
         <div class="inspector-title">Selection</div>
         <div id="selection-info">No selection</div>
       </div>
-
       <div class="inspector-section">
-        <div class="inspector-title">Properties</div>
-        <div id="properties-container">
-          <!-- Knobs and controls will be added here dynamically -->
+        <div class="inspector-title">MIDI</div>
+        <div class="selection-data" id="row1-container">
+        </div>
+        <div class="selection-data" id="row2-container">
+        </div>
+        <div class="selection-data" id="row3-container">
         </div>
       </div>
     </div>
-
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/webmidi@latest/dist/iife/webmidi.iife.js"></script>
-  <script src="liminal.js"></script>
+  <script src="led.js?next=1"></script>
+  <script src="transport.js?next=1"></script>
+  <script src="synthknob.js?next=1"></script>
+  <script src="midi.js?next=1"></script>
+  <script src="liminal.js?next=1"></script>
 </body>
 </html>
 

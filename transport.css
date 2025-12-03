@@ -1,0 +1,63 @@
+/* Transport Bar Styles */
+.transport-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  width: 240px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.transport-controls {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.transport-btn {
+  cursor: pointer;
+  transition: transform 0.1s ease;
+  user-select: none;
+  display: flex;
+  align-items: center;
+}
+
+.transport-btn svg {
+  display: block;
+}
+
+.transport-btn:hover {
+  transform: scale(1.05);
+}
+
+.transport-btn:active {
+  transform: scale(0.95);
+}
+
+.transport-display {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.position-display {
+  font-family: 'Courier New', monospace;
+  font-size: 20px;
+  font-weight: bold;
+  color: #4aff4a;
+  text-align: center;
+  letter-spacing: 2px;
+  background: #0a0a0a;
+  border: 1px solid #2a2a2a;
+  border-radius: 2px;
+  padding: 0 12px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 0 0 8px rgba(74, 255, 74, 0.6);
+}
+
