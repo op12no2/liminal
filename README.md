@@ -4,7 +4,7 @@ Webmidi sequencer. In development. Progress cached here. Not released. But click
 
 https://op12no2.github.io/liminal/liminal.html
 
-NB: Liminal communicates with DAWs using Web MIDI. Currently it uses the first output port it finds. If successful the MIDI indicator will be on (5 pin DIN icon). When it's off, you can clikc it to try again. On Windows (at least) you'll get an alert that you need to allow.  
+NB: Liminal communicates with DAWs using Web MIDI. Currently it uses the first output port it finds. If successful the MIDI indicator will be on (5 pin DIN icon). When it's off, you can click it to try again or refresh the page. On Windows (at least) you'll get an alert that you need to allow.  
 
 On macOS, the IAC (Inter-Application Communication) driver is built into the system as part of core MIDI. It's always available - you just need to enable it in Audio MIDI Setup. It creates virtual MIDI buses that DAWs and Liminal can connect to. 
 
