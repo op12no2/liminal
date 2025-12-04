@@ -1,59 +1,10 @@
 
 /*{{{  constants*/
 
-/*{{{  scales*/
+const DEF_BPM   = 60;
+const DEF_KEY   = 0;
+const DEF_SCALE = 0;
 
-const scaleSpecs = [
-  { name: "chromatic", notes: [0,1,2,3,4,5,6,7,8,9,10,11] },
-  { name: "major", notes: [0,2,4,5,7,9,11] },
-  { name: "minor", notes: [0,2,3,5,7,8,10] },
-  { name: "harmonicMinor", notes: [0,2,3,5,7,8,11] },
-  { name: "melodicMinor", notes: [0,2,3,5,7,9,11] },
-  { name: "majorPentatonic", notes: [0,2,4,7,9] },
-  { name: "minorPentatonic", notes: [0,3,5,7,10] },
-  { name: "dorian", notes: [0,2,3,5,7,9,10] },
-  { name: "phrygian", notes: [0,1,3,5,7,8,10] },
-  { name: "lydian", notes: [0,2,4,6,7,9,11] },
-  { name: "mixolydian", notes: [0,2,4,5,7,9,10] },
-  { name: "locrian", notes: [0,1,3,5,6,8,10] },
-  { name: "wholeTone", notes: [0,2,4,6,8,10] },
-  { name: "diminished", notes: [0,2,3,5,6,8,9,11] },
-  { name: "blues", notes: [0,3,5,6,7,10] },
-  { name: "bebopMajor", notes: [0,2,4,5,7,8,9,11] },
-  { name: "bebopMinor", notes: [0,2,3,5,7,8,9,10,11] },
-  { name: "bebopDominant", notes: [0,2,4,5,7,9,10,11] },
-  { name: "bhairav", notes: [0,1,4,5,7,8,11] },
-  { name: "kafi", notes: [0,2,3,5,7,9,10] },
-  { name: "marwa", notes: [0,1,4,6,7,9,11] },
-  { name: "hijaz", notes: [0,1,4,5,7,8,11] },
-  { name: "bayati", notes: [0,1,3,5,7,8,10] },
-  { name: "persian", notes: [0,1,4,5,6,8,11] },
-  { name: "octatonic", notes: [0,1,3,4,6,7,9,10] },
-  { name: "inSen", notes: [0,1,5,7,10] },
-  { name: "hirajoshi", notes: [0,2,3,7,8] },
-  { name: "iwato", notes: [0,1,5,6,10] },
-  { name: "yo", notes: [0,2,5,7,9] },
-  { name: "pelog", notes: [0,1,3,7,8] },
-  { name: "slendro", notes: [0,2,5,7,10] },
-  { name: "messiaen2", notes: [0,1,3,4,6,7,9,10] },
-  { name: "enigmatic", notes: [0,1,4,6,8,10,11] },
-  { name: "hungarianMinor", notes: [0,2,3,6,7,8,11] },
-  { name: "kumoi", notes: [0,2,3,7,9] },
-  { name: "akebono", notes: [0,2,3,7,10] },
-  { name: "honKumoiJoshi", notes: [0,1,5,7,8] },
-  { name: "messiaen3", notes: [0,2,3,4,6,7,8,10,11] },
-  { name: "messiaen4", notes: [0,1,2,5,6,7,8,11] },
-  { name: "messiaen5", notes: [0,1,5,6,7,11] },
-  { name: "messiaen6", notes: [0,2,4,5,6,8,10,11] },
-  { name: "messiaen7", notes: [0,1,2,3,5,6,7,8,9,11] },
-  { name: "augmented", notes: [0,3,4,7,8,11] },
-  { name: "prometheus", notes: [0,2,4,6,9,10] },
-  { name: "tritone", notes: [0,1,4,6,7,10] },
-  { name: "egyptian", notes: [0,2,5,7,10] },
-  { name: "scriabin", notes: [0,1,4,7,9] }
-];
-
-/*}}}*/
 /*{{{  note length*/
 
 const lengthLabels = [
@@ -143,29 +94,50 @@ function adjust(x, v, min, max) {
 }
 
 /*}}}*/
-/*{{{  thLight*/
-
-function thLight(amount = 1.3) {
-
-  color = theme;
-
-  const r = parseInt(color.slice(1, 3), 16);
-  const g = parseInt(color.slice(3, 5), 16);
-  const b = parseInt(color.slice(5, 7), 16);
-
-  const nr = Math.min(255, Math.round(r * amount));
-  const ng = Math.min(255, Math.round(g * amount));
-  const nb = Math.min(255, Math.round(b * amount));
-
-  return '#' + [nr, ng, nb].map(x => x.toString(16).padStart(2, '0')).join('');
-
-}
-
-/*}}}*/
 /*{{{  status*/
 
 function status(s) {
   setText('status-text', s);
+}
+
+/*}}}*/
+/*{{{  quantiseNote*/
+
+function quantiseNote(midiNote, scale, rootNote) {
+
+  // Transpose note relative to root
+  const transposedNote = midiNote - rootNote;
+  const octave = Math.floor(transposedNote / 12);
+  const noteInOctave = transposedNote - (octave * 12);
+
+  // Find nearest scale note at or below noteInOctave
+  let quantised = scale[0];
+  for (let i = 0; i < scale.length; i++) {
+    if (scale[i] <= noteInOctave) {
+      quantised = scale[i];
+    }
+    else {
+      break;
+    }
+  }
+
+  // If noteInOctave is below all scale notes, use highest note from previous octave
+  if (noteInOctave < scale[0]) {
+    quantised = scale[scale.length - 1];
+    octave--;
+  }
+
+  // Transpose back
+  return rootNote + octave * 12 + quantised;
+
+}
+
+/*}}}*/
+/*{{{  deleteEntry*/
+
+function deleteEntry (a, i) {
+  a[i] = a[a.length - 1];
+  a.pop();
 }
 
 /*}}}*/
@@ -205,7 +177,7 @@ function createNode (x, y) {
 
   nodes.push(node);
 
-  Object.assign(node, defNode);
+  Object.assign(node, selectedNode ? selectedNode : defNode);
 
   node.x = x;
   node.y = y;
@@ -296,33 +268,33 @@ function redrawInspectorSettings() {
   const row1Container = document.getElementById('row1-container');
   const row2Container = document.getElementById('row2-container');
   const row3Container = document.getElementById('row3-container');
+  const row4Container = document.getElementById('row4-container');
 
   setText('inspector-title', 'settings');
 
   row1Container.innerHTML = '';
   row2Container.innerHTML = '';
   row3Container.innerHTML = '';
+  row4Container.innerHTML = '';
 
   /*{{{  bpm*/
   
   const bpmKnob = new SynthKnob(row1Container, 'bpm-knob', {
-    size: 80,
     label: 'BPM',
-    indicatorColor: themeKnob,
+    indicatorColor: themeSettingsKnob,
     min: 40,
     max: 240,
-    value: bpm,
-    defaultValue: 120,
-    onChange: (v) => { bpm = v; redrawCanvas(); }
+    value: selectedBpm,
+    defaultValue: DEF_BPM,
+    onChange: (v) => { selectedBpm = v; redrawCanvas(); }
   });
   
   /*}}}*/
   /*{{{  algorithm*/
   
   const algKnob = new SynthKnob(row1Container, 'alg-knob', {
-    size: 80,
     label: 'ALG.',
-    indicatorColor: themeKnob,
+    indicatorColor: themeSettingsKnob,
     min: 0,
     max: algLabels.length - 1,
     value: algorithm,
@@ -332,33 +304,56 @@ function redrawInspectorSettings() {
   });
   
   /*}}}*/
-  /*{{{  scale*/
+  /*{{{  key & scale*/
   
-  const scaleKnob = new SynthKnob(row2Container, 'scale-knob', {
-    size: 120,
+  const keyKnob = new SynthKnob(row1Container, 'key-knob', {
+    label: 'KEY',
+    indicatorColor: themeSettingsKnob,
+    min: 0,
+    max: 11,
+    value: selectedKey,
+    defaultValue: DEF_KEY,
+    stepLabels: pitchLabels,
+    onChange: (v) => { selectedKey = v; redrawCanvas(); }
+  });
+  
+  const scaleKnob = new SynthKnob(row3Container, 'scale-knob', {
+    size: 100,
     label: 'SCALE',
-    indicatorColor: themeKnob,
+    indicatorColor: themeSettingsKnob,
     min: 0,
     max: scaleLabels.length - 1,
-    value: scaleNum,
-    defaultValue: 26,
+    value: selectedScale,
+    defaultValue: DEF_SCALE,
     stepLabels: scaleLabels,
     sensitivity: 0.4,
-    onChange: (v) => { scaleNum = v; redrawCanvas(); }
+    onChange: (v) => { selectedScale = v; redrawCanvas(); }
   });
   
   /*}}}*/
   /*{{{  spread*/
   
-  const spreadKnob = new SynthKnob(row3Container, 'spread-knob', {
-    size: 80,
+  const spreadKnob = new SynthKnob(row4Container, 'spread-knob', {
     label: 'SPREAD',
-    indicatorColor: themeKnob,
+    indicatorColor: themeSettingsKnob,
     min: 0,
     max: 24,
-    value: spread,
+    value: selectedSpread,
     defaultValue: 0,
-    onChange: (v) => { spread = v; redrawCanvas(); }
+    onChange: (v) => { selectedSpread = v; redrawCanvas(); }
+  });
+  
+  /*}}}*/
+  /*{{{  dynamics*/
+  
+  const dynamicsKnob = new SynthKnob(row4Container, 'dynamics-knob', {
+    label: 'DYNAMICS',
+    indicatorColor: themeSettingsKnob,
+    min: 0,
+    max: 64,
+    value: selectedDynamics,
+    defaultValue: 0,
+    onChange: (v) => { selectedDynamics = v; redrawCanvas(); }
   });
   
   /*}}}*/
@@ -373,12 +368,14 @@ function redrawInspectorNode() {
   const row1Container = document.getElementById('row1-container');
   const row2Container = document.getElementById('row2-container');
   const row3Container = document.getElementById('row3-container');
+  const row4Container = document.getElementById('row4-container');
 
   setText('inspector-title', 'note');
 
   row1Container.innerHTML = '';
   row2Container.innerHTML = '';
   row3Container.innerHTML = '';
+  row4Container.innerHTML = '';
 
   const n = selectedNode;
 
@@ -389,33 +386,33 @@ function redrawInspectorNode() {
   
   const pitchNoteKnob = new SynthKnob(row1Container, 'pitch-note-knob', {
     label: 'NOTE',
-    indicatorColor: themeKnob,
+    indicatorColor: themeNodeKnob,
     min: 0,
     max: 11,
     value: pitchToNote(n.pitch),
-    defaultValue: pitchToNote(defNode.pitch),
+    defaultValue: pitchToNote(n.pitch),
     stepLabels: pitchLabels,
     onChange: (v) => { n.pitch = octAndNoteToPitch(pitchToOct(n.pitch), v); redrawCanvas(); }
   });
   
   const pitchOctKnob = new SynthKnob(row1Container, 'pitch-oct-knob', {
     label: 'OCTAVE',
-    indicatorColor: themeKnob,
+    indicatorColor: themeNodeKnob,
     min: 0,
     max: 8,
     value: pitchToOct(n.pitch),
-    defaultValue: pitchToOct(defNode.pitch),
+    defaultValue: pitchToOct(n.pitch),
     onChange: (v) => { n.pitch = octAndNoteToPitch(v, pitchToNote(n.pitch)); redrawCanvas(); }
   });
   
   const pitchVarKnob = new SynthKnob(row1Container, 'pitch-var-knob', {
     label: 'SPREAD',
-    indicatorColor: themeKnob,
+    indicatorColor: themeNodeKnob,
     min: 0,
     max: 24,
     value: n.pitchVar,
     defaultValue: defNode.pitchvar,
-    onChange: (v) => { n.pitchVar = v; redrawCanvas(); }
+    onChange: (v) => { n.pitchvar = v; redrawCanvas(); }
   });
   
   /*}}}*/
@@ -423,7 +420,7 @@ function redrawInspectorNode() {
   
   const lenKnob = new SynthKnob(row2Container, 'len-knob', {
     label: 'LENGTH',
-    indicatorColor: themeKnob,
+    indicatorColor: themeNodeKnob,
     min: 0,
     max: 15,
     value: lengthValues.indexOf(n.length),
@@ -434,7 +431,7 @@ function redrawInspectorNode() {
   
   const articKnob = new SynthKnob(row2Container, 'artic-knob', {
     label: 'ARTIC.',
-    indicatorColor: themeKnob,
+    indicatorColor: themeNodeKnob,
     min: 0,
     max: 10,
     value: articValues.indexOf(n.artic),
@@ -449,7 +446,7 @@ function redrawInspectorNode() {
   
   const chanKnob = new SynthKnob(row3Container, 'chan-knob', {
     label: 'CHANNEL',
-    indicatorColor: themeKnob,
+    indicatorColor: themeNodeKnob,
     min: 0,
     max: 15,
     value: n.chan,
@@ -462,7 +459,7 @@ function redrawInspectorNode() {
   
   const velKnob = new SynthKnob(row3Container, 'vel-knob', {
     label: 'VELOCITY',
-    indicatorColor: themeKnob,
+    indicatorColor: themeNodeKnob,
     min: 0,
     max: 127,
     value: n.vel,
@@ -471,13 +468,13 @@ function redrawInspectorNode() {
   });
   
   const velVarKnob = new SynthKnob(row3Container, 'vel-var-knob', {
-    label: 'SPREAD',
-    indicatorColor: themeKnob,
+    label: 'DYNAMICS',
+    indicatorColor: themeNodeKnob,
     min: 0,
     max: 16,
     value: n.velVar,
     defaultValue: defNode.velvar,
-    onChange: (v) => { n.velVar = v; redrawCanvas(); }
+    onChange: (v) => { n.velvar = v; redrawCanvas(); }
   });
   
   /*}}}*/
@@ -686,12 +683,12 @@ let gatedNotes     = [];
 let waitingNotes   = [];
 let playedNotes    = [];
 
-let bpm      = 120;
-let running  = false;
-let interval = null;
-let budget   = 0;
-let loopSum  = 0.0;
-let loopNum  = 0;
+let selectedBpm = DEF_BPM;
+let running     = false;
+let interval    = null;
+let budget      = 0;
+let loopSum     = 0.0;
+let loopNum     = 0;
 
 let audioContext = null;
 
@@ -702,9 +699,9 @@ function seqStart() {
   loopSum = 0;
   loopNum = 0;
 
-  budget = Math.floor((60/bpm) * 0.25 * 0.3 * 1000);  // 0.3 * 1/16 note resolution (ms).
+  budget = Math.floor((60/selectedBpm) * 0.25 * 0.3 * 1000);  // 0.3 * 1/16 note resolution (ms).
 
-  console.log('bpm', bpm, 'budget (ms)', budget);
+  console.log('bpm', selectedBpm, 'budget (ms)', budget);
 
   if (running || nodes.length == 0)
     return;
@@ -740,7 +737,7 @@ function seqStart() {
 
 function seqStop() {
 
-  console.log('bpm', bpm, 'budget (ms)', budget, 'mean loop (ms)', (loopSum/loopNum) * 1000, 'loops', loopNum, 'nodes', nodes.length);
+  console.log('bpm', selectedBpm, 'budget (ms)', budget, 'mean loop (ms)', (loopSum/loopNum) * 1000, 'loops', loopNum, 'nodes', nodes.length);
 
   clearInterval(interval);
 
@@ -751,6 +748,23 @@ function seqStop() {
   btnPlay.enable();
   btnStop.turnOff();
   btnStop.disable();
+
+  /*{{{  clear any gated notes*/
+  
+  for (let i=gatedNotes.length-1; i >= 0; i--) {
+  
+    const gn = gatedNotes[i];
+  
+    midiNoteOff(gn.chan, gn.pitch, 0)
+  
+    gn.node.gated = false;
+  
+  }
+  
+  
+  /*}}}*/
+
+  redrawCanvas();
 
 }
 
@@ -781,7 +795,7 @@ function seqLoop() {
   
       midiNoteOn(sn.chan, sn.pitch, sn.vel)
   
-      scheduledNotes.splice(i, 1);
+      deleteEntry(scheduledNotes, i);
   
     }
   
@@ -806,7 +820,7 @@ function seqLoop() {
   
       gn.node.gated = false;
   
-      gatedNotes.splice(i, 1);
+      deleteEntry(gatedNotes, i);
   
     }
   
@@ -827,7 +841,7 @@ function seqLoop() {
   
       playedNotes.push(pn);
   
-      waitingNotes.splice(i, 1);
+      deleteEntry(waitingNotes, i);
   
     }
   
@@ -843,19 +857,19 @@ function seqLoop() {
     const n  = nodes[Math.floor(Math.random() * nodes.length)];
     const sn = new ScheduledNote();
   
-    const duration = 60/bpm * n.length;
+    const duration = 60/selectedBpm * n.length;
   
     sn.node   = n;
     sn.start  = now;
     sn.finish = now + duration * n.artic;
-    sn.wait   = duration;
-    sn.pitch  = adjust(n.pitch, n.pitchvar, 0, 127)
-    sn.vel    = adjust(n.vel, n.velvar, 0, 127)
-    sn.chan   = n.chan
+    sn.wait   = now + duration;
+    sn.pitch  = quantiseLUT[selectedKey][selectedScale][adjust(n.pitch, n.pitchvar + selectedSpread, 0, 127)];
+    sn.vel    = adjust(n.vel, n.velvar + selectedDynamics, 0, 127);
+    sn.chan   = n.chan;
   
     scheduledNotes.push(sn);
   
-    playedNotes.splice(i, 1);
+    deleteEntry(playedNotes, i);
   
   }
   
@@ -874,10 +888,10 @@ function seqLoop() {
 
 /*{{{  init theme*/
 
-let theme       = '#3867d6';
-let themeNode   = theme;
-let themeKnob   = thLight(1.1);
-let themeButton = thLight(1.2);
+let themeNode         = '#3867d6';
+let themeNodeKnob     = '#ffdd00';
+let themeSettingsKnob = '#ff2d55';
+let themeButton       = '#00ff66';
 
 /*}}}*/
 /*{{{  init canvas*/
@@ -913,7 +927,69 @@ defNode.color = themeNode;
 defNode.size  = 15;
 
 /*}}}*/
-/*{{{  init global scale*/
+/*{{{  init key*/
+
+/*{{{  scale specs*/
+
+const scaleSpecs = [
+  { name: "chromatic", notes: [0,1,2,3,4,5,6,7,8,9,10,11] },
+  { name: "major", notes: [0,2,4,5,7,9,11] },
+  { name: "minor", notes: [0,2,3,5,7,8,10] },
+  { name: "harmonic minor", notes: [0,2,3,5,7,8,11] },
+  { name: "melodic minor", notes: [0,2,3,5,7,9,11] },
+  { name: "major pentatonic", notes: [0,2,4,7,9] },
+  { name: "minor pentatonic", notes: [0,3,5,7,10] },
+  { name: "dorian", notes: [0,2,3,5,7,9,10] },
+  { name: "phrygian", notes: [0,1,3,5,7,8,10] },
+  { name: "phrygian dominant", notes: [0,1,4,5,7,8,10] },
+  { name: "lydian", notes: [0,2,4,6,7,9,11] },
+  { name: "lydian dominant", notes: [0,2,4,6,7,9,10] },
+  { name: "lydian augmented", notes: [0,2,4,6,8,9,11] },
+  { name: "mixolydian", notes: [0,2,4,5,7,9,10] },
+  { name: "locrian", notes: [0,1,3,5,6,8,10] },
+  { name: "super locrian", notes: [0,1,3,4,6,8,10] },
+  { name: "wholetone", notes: [0,2,4,6,8,10] },
+  { name: "diminished", notes: [0,2,3,5,6,8,9,11] },
+  { name: "blues", notes: [0,3,5,6,7,10] },
+  { name: "bebop major", notes: [0,2,4,5,7,8,9,11] },
+  { name: "bebop minor", notes: [0,2,3,5,7,8,9,10,11] },
+  { name: "bebop dominant", notes: [0,2,4,5,7,9,10,11] },
+  { name: "bhairav", notes: [0,1,4,5,7,8,11] },
+  { name: "kafi", notes: [0,2,3,5,7,9,10] },
+  { name: "marwa", notes: [0,1,4,6,7,9,11] },
+  { name: "hijaz", notes: [0,1,4,5,7,8,11] },
+  { name: "bayati", notes: [0,1,3,5,7,8,10] },
+  { name: "persian", notes: [0,1,4,5,6,8,11] },
+  { name: "quartal", notes: [0,5,10] },
+  { name: "hexatonic", notes: [0,1,4,5,8,9] },
+  { name: "octatonic", notes: [0,1,3,4,6,7,9,10] },
+  { name: "in sen", notes: [0,1,5,7,10] },
+  { name: "hirajoshi", notes: [0,2,3,7,8] },
+  { name: "iwato", notes: [0,1,5,6,10] },
+  { name: "yo", notes: [0,2,5,7,9] },
+  { name: "pelog", notes: [0,1,3,7,8] },
+  { name: "slendro", notes: [0,2,5,7,10] },
+  { name: "enigmatic", notes: [0,1,4,6,8,10,11] },
+  { name: "hungarian minor", notes: [0,2,3,6,7,8,11] },
+  { name: "gypsy minor", notes: [0,2,3,6,7,8,11] },
+  { name: "kumoi", notes: [0,2,3,7,9] },
+  { name: "akebono", notes: [0,2,3,7,10] },
+  { name: "hon kumoi joshi", notes: [0,1,5,7,8] },
+  { name: "messiaen 2", notes: [0,1,3,4,6,7,9,10] },
+  { name: "messiaen 3", notes: [0,2,3,4,6,7,8,10,11] },
+  { name: "messiaen 4", notes: [0,1,2,5,6,7,8,11] },
+  { name: "messiaen 5", notes: [0,1,5,6,7,11] },
+  { name: "messiaen 6", notes: [0,2,4,5,6,8,10,11] },
+  { name: "messiaen 7", notes: [0,1,2,3,5,6,7,8,9,11] },
+  { name: "augmented", notes: [0,3,4,7,8,11] },
+  { name: "prometheus", notes: [0,2,4,6,9,10] },
+  { name: "tritone", notes: [0,1,4,6,7,10] },
+  { name: "egyptian", notes: [0,2,5,7,10] },
+  { name: "scriabin", notes: [0,1,4,7,9] },
+  { name: "fifths", notes: [0,7] }
+];
+
+/*}}}*/
 
 const scaleLabels = [];
 
@@ -921,12 +997,27 @@ for (let i=0; i < scaleSpecs.length; i++) {
   scaleLabels.push(scaleSpecs[i].name);
 }
 
-let scaleNum = 26;
+let selectedScale = DEF_SCALE;
+let selectedKey   = DEF_KEY;
+
+const quantiseLUT = Array(12);
+
+for (let i=0; i < 12; i++) {
+  quantiseLUT[i] = Array(scaleSpecs.length);
+  for (let j=0; j < scaleSpecs.length; j++) {
+    quantiseLUT[i][j] = Array(128);
+    let notes = scaleSpecs[j].notes;
+    for (let k=0; k < 128; k++) {
+      quantiseLUT[i][j][k] = quantiseNote(k, notes, i);
+    }
+  }
+}
 
 /*}}}*/
-/*{{{  init global spread*/
+/*{{{  init spread /dynamics*/
 
-let spread = 0;
+let selectedSpread   = 0;
+let selectedDynamics = 0;
 
 /*}}}*/
 /*{{{  init algorithm*/
@@ -939,20 +1030,28 @@ let algorithm = ALG_RANDOM;
 const algLabels = ['random','nearest'];
 
 /*}}}*/
-/*{{{  create top bar content*/
+/*{{{  init toolbar*/
 
 const BTN_SIZE = 36;
 
 const btnPlay = new HardwareButton({ icon: 'play', color: themeButton, size: BTN_SIZE, onClick: seqStart });
 document.getElementById('btn-play').appendChild(btnPlay.render());
 btnPlay.turnOn();
+btnPlay.enable();
 
 const btnStop = new HardwareButton({ icon: 'stop', color: themeButton, size: BTN_SIZE, onClick: seqStop });
 document.getElementById('btn-stop').appendChild(btnStop.render());
+btnStop.disable();
 
-const btnSettings = new HardwareButton({ icon: 'cog', color: themeButton, size: BTN_SIZE, onClick: redrawInspectorSettings });
+const btnSettings = new HardwareButton({ icon: 'cog', color: themeSettingsKnob, size: BTN_SIZE, onClick: redrawInspectorSettings });
 document.getElementById('btn-settings').appendChild(btnSettings.render());
 btnSettings.turnOn();
+
+const btnHelp = new HardwareButton({icon: 'help', size: BTN_SIZE, color: themeButton, onClick: () => {
+  window.open('https://github.com/op12no2/liminal', '_blank');
+}});
+document.getElementById('btn-help').appendChild(btnHelp.render());
+btnHelp.turnOn();
 
 const btnMidi = new HardwareButton({ icon: 'midi', color: themeButton, size: BTN_SIZE, onClick: () => midiStart(btnMidi) });
 document.getElementById('btn-midi').appendChild(btnMidi.render());

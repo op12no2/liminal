@@ -1,3 +1,4 @@
+
 class HardwareButton {
   constructor(options = {}) {
     this.size = options.size || 30;
@@ -69,6 +70,8 @@ class HardwareButton {
         return this.createStopIcon(center, scale);
       case 'midi':
         return this.createMidiIcon(center, scale);
+      case 'help':
+        return this.createHelpIcon(center, scale);
       default:
         return '';
     }
@@ -181,6 +184,29 @@ class HardwareButton {
     `;
   }
 
+  createHelpIcon(center, scale) {
+    // Question mark with circular background
+    const fontSize = 14 * scale;
+    const yOffset = 1.5 * scale; // Adjust vertical position
+
+    return `
+      <g class="btn-icon">
+        <!-- Circle background -->
+        <circle cx="${center}" cy="${center}" r="${5.5 * scale}"
+                fill="${this.offColor}" stroke="none" />
+
+        <!-- Question mark -->
+        <text x="${center}" y="${center + yOffset}"
+              font-family="Arial, sans-serif"
+              font-size="${fontSize}"
+              font-weight="bold"
+              fill="#1a1a1a"
+              text-anchor="middle"
+              dominant-baseline="middle">?</text>
+      </g>
+    `;
+  }
+
   attachEvents() {
     if (!this.element) return;
 
@@ -273,7 +299,7 @@ class HardwareButton {
     if (this.iconElement.tagName === 'g') {
       const paths = this.iconElement.querySelectorAll('path, rect, circle');
       paths.forEach(el => {
-        // Don't change the center hole of the cog
+        // Don't change the center hole of the cog or question mark text background
         if (el.getAttribute('fill') === '#1a1a1a') return;
         el.setAttribute('fill', color);
       });
