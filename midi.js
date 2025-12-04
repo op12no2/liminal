@@ -26,10 +26,17 @@ async function midiInit() {
 /*}}}*/
 /*{{{  midiStart*/
 
-function midiStart(led) {
+function midiStart(btn) {
+
+  if (midiOut)
+    return;
+
   midiInit().then(output => {
     midiOut = output;
-    led.setActive(true);
+    if (midiOut) {
+      btn.turnOn();
+      status('');
+    }
     console.log(midiOut);
   });
 }
