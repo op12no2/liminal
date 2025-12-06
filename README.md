@@ -10,7 +10,7 @@ Liminal communicates with DAWs using Web MIDI. Currently it uses the first outpu
 
 On macOS, the IAC (Inter-Application Communication) driver is built into the system as part of core MIDI. It's always available - you just need to enable it in Audio MIDI Setup. It creates virtual MIDI buses that DAWs and Liminal can connect to. 
 
-On Windows, there's no equivalent built-in virtual MIDI driver, so you need third-party software like loopMIDI (easiest) or virtualMIDI to create virtual MIDI ports. I use loopMIDI and Bitwig and it works fine. In Bitwig you'll see loopMIDI as a controller.
+On Windows, there's no equivalent built-in virtual MIDI driver, so you need third-party software like loopMIDI (easiest) or virtualMIDI to create virtual MIDI ports. In Bitwig you'll see loopMIDI as a controller.
 
 https://www.tobias-erichsen.de/software.html - loopMIDI and virtualMIDI
 
