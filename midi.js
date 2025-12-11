@@ -1,30 +1,23 @@
-
-let midiOut = null;
-
-/*{{{  midiInit*/
-
 async function midiInit() {
+
   try {
     const access = await navigator.requestMIDIAccess();
 
     // Find first output port
     const outputs = Array.from(access.outputs.values());
     if (outputs.length === 0) {
-      console.warn('No MIDI outputs available');
+      //console.warn('No MIDI outputs available');
       return null;
     }
 
-    console.log('Connected to:', outputs[0].name);
+    //console.log('Connected to:', outputs[0].name);
     return outputs[0];
   }
   catch (error) {
-    console.error('MIDI access failed:', error);
+    //console.error('MIDI access failed:', error);
     return null;
   }
 }
-
-/*}}}*/
-/*{{{  midiStart*/
 
 function midiStart(btn) {
 
@@ -35,14 +28,14 @@ function midiStart(btn) {
     midiOut = output;
     if (midiOut) {
       btn.turnOn();
-      status('');
+      setStatus('');
     }
-    console.log(midiOut);
+    else {
+      status ('midi not found');
+    }
+    //console.log(midiOut);
   });
 }
-
-/*}}}*/
-/*{{{  midiNoteOn/Off*/
 
 function midiNoteOn(channel, pitch, velocity) {
   if (!midiOut)
@@ -58,13 +51,8 @@ function midiNoteOff(channel, pitch, velocity) {
   midiOut.send([status, pitch & 0x7F, velocity & 0x7F]);
 }
 
-/*}}}*/
-/*{{{  midiPreview*/
-
 function previewNote(channel, pitch, velocity) {
   midiNoteOn(channel, pitch, velocity);
   midiNoteOff(channel, pitch, 0);
 }
-
-/*}}}*/
 
