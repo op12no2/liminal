@@ -17,27 +17,6 @@ function redrawInspectorSettings() {
     onChange: (v) => { selectedBpm = v; redrawCanvas(); }
   });
   
-  const algKnob = new Knob(row4Container, 'alg-knob', {
-    label: 'ALG.',
-    indicatorColor: themeSettingsKnob,
-    min: 0,
-    max: algLabels.length - 1,
-    value: selectedAlg,
-    defaultValue: ALG_RANDOM,
-    stepLabels: algLabels,
-    onChange: (v) => { selectedAlg = v; redrawCanvas(); }
-  });
-  
-  const strengthKnob = new Knob(row4Container, 'strength-knob', {
-    label: 'GEOMETRY',
-    indicatorColor: themeSettingsKnob,
-    min: 0,
-    max: 100,
-    value: selectedStrength,
-    defaultValue: 0,
-    onChange: (v) => { selectedStrength = v; redrawCanvas(); }
-  });
-  
   const keyKnob = new Knob(row1Container, 'key-knob', {
     label: 'KEY',
     indicatorColor: themeSettingsKnob,
@@ -134,10 +113,10 @@ function redrawInspectorNode() {
     indicatorColor: themeNodeKnob,
     min: 0,
     max: 15,
-    value: lengthValues.indexOf(n.length),
+    value: lengthValues.indexOf(n.dur),
     stepLabels: lengthLabels,
-    defaultValue: lengthValues.indexOf(defNode.length),
-    onChange: (v) => { n.length = lengthValues[v]; redrawCanvas(); }
+    defaultValue: lengthValues.indexOf(defNode.dur),
+    onChange: (v) => { n.dur = lengthValues[v]; redrawCanvas(); }
   });
   
   const articKnob = new Knob(row2Container, 'artic-knob', {

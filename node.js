@@ -4,11 +4,18 @@ function createNode (x, y) {
 
   nodes.push(node);
 
-  Object.assign(node, selectedNode ? selectedNode : defNode);
+  if (selectedNode) {
+    const {x, y, links, ...rest} = selectedNode;
+    Object.assign(node, rest);
+  }
+  else {
+    Object.assign(node, defNode);
+  }
 
-  node.x = x;
-  node.y = y;
-
+  node.x     = x;
+  node.y     = y;
+  node.links = [];
+  
   return node;
 
 }
@@ -38,7 +45,10 @@ function findNode(x, y) {
 
 function performNode (now, node, note) {
 
-  const duration = 60/selectedBpm * node.length;
+  if (!node)
+    console.log('performNode, no node');
+
+  const duration = 60/selectedBpm * node.dur;
 
   note.startAt   = now;
   note.finishAt  = now + duration * node.artic;

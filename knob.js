@@ -35,7 +35,7 @@ class Knob {
         let closest = this.steps[0];
         let minDiff = Math.abs(value - closest);
 
-        for (let i = 1; i < this.steps.length; i++) {
+        for (let i = 1; i < this.steps; i++) {
           const diff = Math.abs(value - this.steps[i]);
           if (diff < minDiff) {
             minDiff = diff;

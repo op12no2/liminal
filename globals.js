@@ -57,7 +57,7 @@ const lengthValues = [
 ];
 
 const pitchLabels = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'G#', 'A', 'Bb', 'B'];
-const articLabels = ['inf.', 'trig', 'stacc.', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', 'legato'];
+const articLabels = ['inf.', 'trig.', 'stacc.', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', 'legato'];
 const articValues = [ 0.0,   0.1,   0.2,   0.3,   0.4,   0.5,   0.6,   0.7,   0.8,   0.9,   1.0];
 
 const scaleSpecs = [
@@ -127,27 +127,27 @@ let budget      = 0;
 let loopSum     = 0.0;
 let loopNum     = 0;
 
-let selectedAlg      = ALG_RANDOM;
-let selectedStrength = 0;
 let selectedScale    = DEF_SCALE;
 let selectedKey      = DEF_KEY;
 let selectedDynamics = 0;
 let selectedSpread   = 0;
 let selectedNode     = null;
-let selectedBpm     = DEF_BPM;
+let selectedBpm      = DEF_BPM;
 
 let audioContext = null;
 
 let pointerdownNode = null;
 let pointerdownX    = 0;
 let pointerdownY    = 0;
+let pointerdownPri  = false;
 
 let pointerupNode = null;
 let pointerupX    = 0;
 let pointerupY    = 0;
+let pointerupPri  = false;
 
-let pointermoveX = 0;
-let pointermoveY = 0;
+let pointermoveX  = 0;
+let pointermoveY  = 0;
 
 const canvas = document.getElementById('seq-canvas');
 const ctx    = canvas.getContext('2d');
@@ -164,27 +164,25 @@ function Node() {
   this.pitchvar = 0;    // +/- random semitones
   this.vel      = 0;    // midi value
   this.velvar   = 0;    // midi value
-  this.length   = 0.0;  // fraction of 1/4 note relative to bpm
+  this.dur      = 0.0;  // fraction of 1/4 note relative to bpm
   this.artic    = 0.0;  // fraction of length to gate on
   this.chan     = 0;    // midi value
   this.size     = 0;
   this.color    = 0;
   this.gated    = 0;
   this.leadin   = false;
+  this.links    = [];
 
 }
 
 const nodes   = [];
 const defNode = new Node();
 
-const queued    = Array(NODE_POOL).fill(null);
-let   queueSize = 0;
-
 defNode.pitch    = 60;
 defNode.pitchvar = 0;
 defNode.vel      = 64;
 defNode.velvar   = 0;
-defNode.length   = 1.0;
+defNode.dur      = 1.0;
 defNode.artic    = 1.0;
 defNode.repeat   = 0;
 defNode.chan     = 0;

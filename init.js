@@ -51,4 +51,3 @@ for (let i=0; i < scaleSpecs.length; i++) {
 resizeCanvas();
 
 midiStart(btnMidi);
-

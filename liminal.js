@@ -137,28 +137,8 @@ function seqLoop() {
     if (n.state == PLAYED) {
       
       n.state = IDLE;
+      scheduleNextOr(now, n);
 
-      algApply(n.node, n);
-
-      if (queued.length == 0) {
-        seqStop();
-        return;
-      }
-
-      for (let j=0; j < queueSize; j++) {
-
-        const nextNode = queued[j];
-        const nextNote = getIdleNote();
-      
-        if (nextNode && nextNote) {
-      
-          nextNote.state = SCHEDULED;
-          nextNote.node  = nextNode;
-      
-          performNode(now, nextNode, nextNote);
-      
-        }
-      }
     }
   }
 
@@ -167,6 +147,27 @@ function seqLoop() {
   loopSum += ((audioContext.currentTime - now) * 1000) / budget;
   loopNum++;
 
+}
+
+function scheduleNextOr(now, note) {
+
+  const lastNode = note.node;
+
+  if (lastNode.links.length == 0)
+    return;
+
+  const r        = Math.floor(Math.random() * lastNode.links.length);
+  const nextNode = lastNode.links[r];
+  const nextNote = getIdleNote();
+      
+  if (nextNote) {
+      
+    nextNote.state = SCHEDULED;
+    nextNote.node  = nextNode;
+      
+    performNode(now, nextNode, nextNote);
+      
+  }
 }
 
 function getIdleNote() {
@@ -182,5 +183,3 @@ function getIdleNote() {
   return null;
 
 }
-
-

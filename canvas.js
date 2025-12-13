@@ -15,44 +15,75 @@ function resizeCanvas() {
 
 }
 
+function drawArrow(fromX, fromY, toX, toY, color) {
+  // Draw line
+  ctx.beginPath();
+  ctx.moveTo(fromX, fromY);
+  ctx.lineTo(toX, toY);
+  ctx.strokeStyle = color;
+  ctx.stroke();
+  
+  // Arrow head at 1/3 distance
+  const dx = toX - fromX;
+  const dy = toY - fromY;
+  const arrowX = fromX + dx * 0.5;
+  const arrowY = fromY + dy * 0.5;
+  
+  // Perpendicular for arrow wings
+  const angle = Math.atan2(dy, dx);
+  const arrowSize = 6;
+  const arrowAngle = Math.PI / 6; // 30 degrees
+  
+  ctx.beginPath();
+  ctx.moveTo(arrowX, arrowY);
+  ctx.lineTo(
+    arrowX - arrowSize * Math.cos(angle - arrowAngle),
+    arrowY - arrowSize * Math.sin(angle - arrowAngle)
+  );
+  ctx.moveTo(arrowX, arrowY);
+  ctx.lineTo(
+    arrowX - arrowSize * Math.cos(angle + arrowAngle),
+    arrowY - arrowSize * Math.sin(angle + arrowAngle)
+  );
+  ctx.stroke();
+}
+
 function redrawCanvas() {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.save();
 
   for (const node of nodes) {
 
-    ctx.translate(node.x, node.y);
+    const color = node.leadin ? themeLeadin : node.color;
 
-    const lw         = 2;
-    const r          = node.size;
-    const isSelected = (node == selectedNode) | 0;
-    const isFilled   = node.gated | 0;
-    const color      = node.leadin ? themeLeadin : node.color;
-
+    // Draw node circle
     ctx.beginPath();
-    ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.arc(node.x, node.y, node.size, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
 
-    if (isFilled) {
-      ctx.fillStyle = color;
-      ctx.fill();
-    }
-
-    ctx.lineWidth   = lw;
-    ctx.strokeStyle = color;
-    ctx.stroke();
-
-    if (isSelected) {
+    // Draw gate dot
+    if (node.gated) {
       ctx.beginPath();
-      ctx.arc(0, 0, 3, 0, Math.PI * 2);
-      ctx.fillStyle = '#555';
+      ctx.arc(node.x, node.y, 3, 0, Math.PI * 2);
+      ctx.fillStyle = '#ccc';
       ctx.fill();
     }
-    ctx.translate(-node.x, -node.y);
-  }
 
-  ctx.restore();
+    // Draw links
+    for (const link of node.links) {
+      drawArrow(node.x, node.y, link.x, link.y, color);
+    }
 
+    // Draw selection ring on top
+    if (selectedNode) {
+      ctx.beginPath();
+      ctx.arc(selectedNode.x, selectedNode.y, selectedNode.size, 0, Math.PI * 2);
+      ctx.lineWidth   = 1;
+      ctx.strokeStyle = '#999';
+      ctx.stroke();
+    }
+  }  
 }
 
 function dblclickCanvas (e) {
@@ -92,8 +123,9 @@ function pointerdownCanvas (e) {
   pointerdownNode = findNode(x,y);
   pointerdownX    = x;
   pointerdownY    = y;
+  pointerdownPri  = primaryModifier(e);
 
-  if (!pointerdownNode && primaryModifier(e)) { // create node
+  if (!pointerdownNode && pointerdownPri) { // create node
     selectedNode = createNode(x, y);
     redrawCanvas();
     redrawInspectorNode();
@@ -111,9 +143,10 @@ function pointerdownCanvas (e) {
     redrawInspectorSettings();
   }
 
-  pointerupNode = null;
-  pointerupX    = 0;
-  pointerupY    = 0;
+  pointerupNode  = null;
+  pointerupX     = 0;
+  pointerupY     = 0;
+  pointerupPri   = false;
 
 }
 
@@ -125,12 +158,18 @@ function pointerupCanvas (e) {
 
   pointerupNode = findNode(x,y);
   pointerupX    = x;
-  pointerupY    = x;
+  pointerupY    = y;
+  pointerupPri  = primaryModifier(e);
+
+  if (pointerdownNode && pointerdownPri && pointerupNode && pointerupPri && pointerdownNode != pointerupNode && !pointerdownNode.links.includes(pointerupNode)) {
+    pointerdownNode.links.push(pointerupNode);
+    redrawCanvas();
+  }
 
   pointerdownNode = null;
   pointerdownX    = 0;
   pointerdownY    = 0;
-
+  pointerdownPri  = false;
 }
 
 function pointermoveCanvas (e) {
@@ -142,7 +181,7 @@ function pointermoveCanvas (e) {
   pointermoveX = x;
   pointermoveY = y;
 
-  if (pointerdownNode && !primaryModifier(e)) { // drag node
+  if (pointerdownNode && !pointerdownPri && !primaryModifier(e)) { // drag node
     pointerdownNode.x = x;
     pointerdownNode.y = y;
     redrawCanvas();
