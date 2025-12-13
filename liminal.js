@@ -20,16 +20,13 @@ function seqStart() {
   let now        = audioContext.currentTime;
 
   for (let i=0; i < nodes.length; i++) {
-
     const node = nodes[i];
-
     if (node.leadin) {
       const note = notes[numLeadins++];
       note.state = SCHEDULED;
       note.node  = node;
       performNode(now, node, note);
     }
-
   }
 
   if (numLeadins == 0) {
@@ -140,21 +137,29 @@ function seqLoop() {
     if (n.state == PLAYED) {
       
       n.state = IDLE;
-      
-      const nextNode = nodes[Math.floor(Math.random() * nodes.length)];
-      const nextNote = getIdleNote();
-      
-      if (nextNote) {
-      
-        nextNote.state = SCHEDULED;
-        nextNote.node  = nextNode;
-      
-        performNode(now, nextNode, nextNote);
-      
-      }
-      
-    }
 
+      algApply(n.node, n);
+
+      if (queued.length == 0) {
+        seqStop();
+        return;
+      }
+
+      for (let j=0; j < queueSize; j++) {
+
+        const nextNode = queued[j];
+        const nextNote = getIdleNote();
+      
+        if (nextNode && nextNote) {
+      
+          nextNote.state = SCHEDULED;
+          nextNote.node  = nextNode;
+      
+          performNode(now, nextNode, nextNote);
+      
+        }
+      }
+    }
   }
 
   redrawCanvas();

@@ -6,6 +6,7 @@ const PLAYED    = 4;
 
 const ALG_RANDOM  = 0;
 const ALG_NEAREST = 1;
+
 const BTN_SIZE    = 36;
 const NODE_POOL   = 16 * 8;  // 8 notes per channel
 const DEF_KEY     = 0;
@@ -127,6 +128,7 @@ let loopSum     = 0.0;
 let loopNum     = 0;
 
 let selectedAlg      = ALG_RANDOM;
+let selectedStrength = 0;
 let selectedScale    = DEF_SCALE;
 let selectedKey      = DEF_KEY;
 let selectedDynamics = 0;
@@ -174,6 +176,9 @@ function Node() {
 
 const nodes   = [];
 const defNode = new Node();
+
+const queued    = Array(NODE_POOL).fill(null);
+let   queueSize = 0;
 
 defNode.pitch    = 60;
 defNode.pitchvar = 0;

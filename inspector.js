@@ -17,7 +17,7 @@ function redrawInspectorSettings() {
     onChange: (v) => { selectedBpm = v; redrawCanvas(); }
   });
   
-  const algKnob = new Knob(row1Container, 'alg-knob', {
+  const algKnob = new Knob(row4Container, 'alg-knob', {
     label: 'ALG.',
     indicatorColor: themeSettingsKnob,
     min: 0,
@@ -26,6 +26,16 @@ function redrawInspectorSettings() {
     defaultValue: ALG_RANDOM,
     stepLabels: algLabels,
     onChange: (v) => { selectedAlg = v; redrawCanvas(); }
+  });
+  
+  const strengthKnob = new Knob(row4Container, 'strength-knob', {
+    label: 'GEOMETRY',
+    indicatorColor: themeSettingsKnob,
+    min: 0,
+    max: 100,
+    value: selectedStrength,
+    defaultValue: 0,
+    onChange: (v) => { selectedStrength = v; redrawCanvas(); }
   });
   
   const keyKnob = new Knob(row1Container, 'key-knob', {
@@ -39,7 +49,7 @@ function redrawInspectorSettings() {
     onChange: (v) => { selectedKey = v; redrawCanvas(); }
   });
   
-  const scaleKnob = new Knob(row3Container, 'scale-knob', {
+  const scaleKnob = new Knob(row2Container, 'scale-knob', {
     size: 100,
     label: 'SCALE',
     indicatorColor: themeSettingsKnob,
@@ -52,7 +62,7 @@ function redrawInspectorSettings() {
     onChange: (v) => { selectedScale = v; redrawCanvas(); }
   });
   
-  const spreadKnob = new Knob(row4Container, 'spread-knob', {
+  const spreadKnob = new Knob(row3Container, 'spread-knob', {
     label: 'SPREAD',
     indicatorColor: themeSettingsKnob,
     min: 0,
@@ -62,7 +72,7 @@ function redrawInspectorSettings() {
     onChange: (v) => { selectedSpread = v; redrawCanvas(); }
   });
   
-  const dynamicsKnob = new Knob(row4Container, 'dynamics-knob', {
+  const dynamicsKnob = new Knob(row3Container, 'dynamics-knob', {
     label: 'DYNAMICS',
     indicatorColor: themeSettingsKnob,
     min: 0,

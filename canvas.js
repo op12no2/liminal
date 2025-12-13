@@ -1,5 +1,3 @@
-
-
 function primaryModifier(e) {
   return e.ctrlKey || e.metaKey;
 }
@@ -95,22 +93,22 @@ function pointerdownCanvas (e) {
   pointerdownX    = x;
   pointerdownY    = y;
 
-  if (!pointerdownNode && primaryModifier(e)) {
+  if (!pointerdownNode && primaryModifier(e)) { // create node
     selectedNode = createNode(x, y);
     redrawCanvas();
     redrawInspectorNode();
     //console.log(JSON.stringify(selectedNode, null, 2));
   }
-  else if (pointerdownNode) {
+  else if (pointerdownNode) { // select node
     selectedNode = pointerdownNode;
     redrawCanvas();
     redrawInspectorNode();
     //  (JSON.stringify(selectedNode, null, 2));
   }
-  else if (!pointerdownNode && selectedNode) {
+  else if (!pointerdownNode && selectedNode) { // clear selection
     selectedNode = null;
     redrawCanvas();
-    redrawInspectorNode();
+    redrawInspectorSettings();
   }
 
   pointerupNode = null;
@@ -144,7 +142,7 @@ function pointermoveCanvas (e) {
   pointermoveX = x;
   pointermoveY = y;
 
-  if (pointerdownNode) {
+  if (pointerdownNode && !primaryModifier(e)) { // drag node
     pointerdownNode.x = x;
     pointerdownNode.y = y;
     redrawCanvas();

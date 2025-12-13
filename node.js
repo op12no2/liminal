@@ -49,3 +49,9 @@ function performNode (now, node, note) {
 
 }
 
+function nodeDist (n1, n2) {
+  const x = n1.x - n2.x;
+  const y = n1.y - n2.y;
+  //return Math.sqrt(x * x + y * y);
+  return x * x + y * y;
+}
