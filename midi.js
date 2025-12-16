@@ -10,7 +10,6 @@ async function midiInit() {
       return null;
     }
 
-    //console.log('Connected to:', outputs[0].name);
     return outputs[0];
   }
   catch (error) {
@@ -33,7 +32,6 @@ function midiStart(btn) {
     else {
       status ('midi not found');
     }
-    //console.log(midiOut);
   });
 }
 

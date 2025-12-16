@@ -123,7 +123,7 @@ function redrawInspectorNode() {
     label: 'ARTIC.',
     indicatorColor: themeNodeKnob,
     min: 0,
-    max: 10,
+    max: 9,
     value: articValues.indexOf(n.artic),
     stepLabels: articLabels,
     defaultValue: articValues.indexOf(defNode.artic),

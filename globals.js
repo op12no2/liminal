@@ -57,8 +57,8 @@ const lengthValues = [
 ];
 
 const pitchLabels = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'G#', 'A', 'Bb', 'B'];
-const articLabels = ['inf.', 'trig.', 'stacc.', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', 'legato'];
-const articValues = [ 0.0,   0.1,   0.2,   0.3,   0.4,   0.5,   0.6,   0.7,   0.8,   0.9,   1.0];
+const articLabels = ['trig.', 'stacc.', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', 'legato'];
+const articValues = [ 0.1,    0.2,       0.3,   0.4,   0.5,   0.6,   0.7,   0.8,   0.9,   1.0];
 
 const scaleSpecs = [
   { name: "chromatic", notes: [0,1,2,3,4,5,6,7,8,9,10,11] },

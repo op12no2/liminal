@@ -20,11 +20,10 @@ function createNode (x, y) {
 
 }
 
-function findNode(x, y) {
+function findNode(x, y, slop=2) {
 
   let closest    = null;
   let bestDistSq = Infinity;
-  let slop       = 2;
 
   for (const node of nodes) {
     const dx = x - node.x;
@@ -46,7 +45,7 @@ function findNode(x, y) {
 function performNode (now, node, note) {
 
   if (!node)
-    console.log('performNode, no node');
+    ('performNode, no node');
 
   const duration = 60/selectedBpm * node.dur;
 
@@ -59,9 +58,20 @@ function performNode (now, node, note) {
 
 }
 
-function nodeDist (n1, n2) {
-  const x = n1.x - n2.x;
-  const y = n1.y - n2.y;
-  //return Math.sqrt(x * x + y * y);
-  return x * x + y * y;
+function deleteNode(node) {
+  
+  // Remove this node from any other node's links
+  for (const n of nodes) {
+    const index = n.links.indexOf(node);
+    if (index !== -1) {
+      n.links.splice(index, 1);
+    }
+  }
+  
+  // Remove the node itself from the nodes array
+  const nodeIndex = nodes.indexOf(node);
+  if (nodeIndex !== -1) {
+    nodes.splice(nodeIndex, 1);
+  }
 }
+

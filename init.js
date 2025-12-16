@@ -28,6 +28,7 @@ canvas.addEventListener('dblclick',    dblclickCanvas);
 canvas.addEventListener('pointerdown', pointerdownCanvas);
 canvas.addEventListener('pointerup',   pointerupCanvas);
 canvas.addEventListener('pointermove', pointermoveCanvas);
+canvas.addEventListener('keydown',     keydownCanvas);
 
 canvas.addEventListener("contextmenu", (e) => {
   e.preventDefault();
@@ -49,5 +50,7 @@ for (let i=0; i < scaleSpecs.length; i++) {
 }
 
 resizeCanvas();
+
+canvas.tabIndex = 0;
 
 midiStart(btnMidi);

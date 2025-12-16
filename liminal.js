@@ -101,8 +101,7 @@ function seqLoop() {
             
       if (n.finishAt <= now) {
       
-        if (n.duration > 0)
-          midiNoteOff(n.chan, n.pitch, 0);
+        midiNoteOff(n.chan, n.pitch, 0);
       
         n.state      = RESTING;
         n.node.gated = false;

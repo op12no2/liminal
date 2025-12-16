@@ -129,7 +129,6 @@ function pointerdownCanvas (e) {
     selectedNode = createNode(x, y);
     redrawCanvas();
     redrawInspectorNode();
-    //console.log(JSON.stringify(selectedNode, null, 2));
   }
   else if (pointerdownNode) { // select node
     selectedNode = pointerdownNode;
@@ -161,9 +160,17 @@ function pointerupCanvas (e) {
   pointerupY    = y;
   pointerupPri  = primaryModifier(e);
 
-  if (pointerdownNode && pointerdownPri && pointerupNode && pointerupPri && pointerdownNode != pointerupNode && !pointerdownNode.links.includes(pointerupNode)) {
+  if (pointerdownNode && pointerdownPri && pointerupNode && pointerupPri && pointerdownNode != pointerupNode && !pointerdownNode.links.includes(pointerupNode)) { // link to node 
     pointerdownNode.links.push(pointerupNode);
     redrawCanvas();
+  }
+
+  else if (pointerdownNode && pointerdownPri && !pointerupNode && pointerupPri) { // create node and link
+    selectedNode = createNode(x, y);
+    pointerupNode = selectedNode;
+    pointerdownNode.links.push(pointerupNode);
+    redrawCanvas();
+    redrawInspectorNode();
   }
 
   pointerdownNode = null;
@@ -187,4 +194,22 @@ function pointermoveCanvas (e) {
     redrawCanvas();
   }
 
+}
+
+function keydownCanvas(e) {
+  
+  if (e.key === 'Delete' || e.key === 'Backspace') {
+    
+    if (selectedNode) {
+      const x = selectedNode.x;
+      const y = selectedNode.y;
+      deleteNode(selectedNode);
+      selectedNode = findNode(x, y, 100000);
+      redrawCanvas();
+      if (selectedNode)
+        redrawInspectorNode();
+      else
+        redrawInspectorSettings();
+    }
+  }
 }

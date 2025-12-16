@@ -59,6 +59,10 @@ body {
   overflow: hidden;
 }
 
+canvas:focus {
+  outline: none;
+}
+
 .inspector-panel {
   width: var(--inspector-width);
   height: 100%;
