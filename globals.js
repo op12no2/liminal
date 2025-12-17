@@ -132,16 +132,19 @@ let selectedKey      = DEF_KEY;
 let selectedDynamics = 0;
 let selectedSpread   = 0;
 let selectedNode     = null;
+let selectedLink     = null;
 let selectedBpm      = DEF_BPM;
 
 let audioContext = null;
 
 let pointerdownNode = null;
+let pointerdownLink = null;
 let pointerdownX    = 0;
 let pointerdownY    = 0;
 let pointerdownPri  = false;
 
 let pointerupNode = null;
+let pointerupLink = null;
 let pointerupX    = 0;
 let pointerupY    = 0;
 let pointerupPri  = false;
@@ -155,6 +158,13 @@ const ctx    = canvas.getContext('2d');
 let midiOut = null;
 
 const quantiseLUT = Array(12);
+
+function Link() {
+
+    this.weight   = 0;
+    this.destNode = null;
+
+}
 
 function Node() {
 

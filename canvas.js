@@ -15,12 +15,13 @@ function resizeCanvas() {
 
 }
 
-function drawArrow(fromX, fromY, toX, toY, color) {
+function drawArrow(fromX, fromY, toX, toY, color, weight = 1) {
   // Draw line
   ctx.beginPath();
   ctx.moveTo(fromX, fromY);
   ctx.lineTo(toX, toY);
   ctx.strokeStyle = color;
+  ctx.lineWidth = weight;
   ctx.stroke();
   
   // Arrow head at 1/3 distance
@@ -31,9 +32,10 @@ function drawArrow(fromX, fromY, toX, toY, color) {
   
   // Perpendicular for arrow wings
   const angle = Math.atan2(dy, dx);
-  const arrowSize = 6;
+  const arrowSize = 6 + weight - 1;
   const arrowAngle = Math.PI / 6; // 30 degrees
   
+  ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(arrowX, arrowY);
   ctx.lineTo(
@@ -52,17 +54,40 @@ function redrawCanvas() {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  // draw links
+
+  let x1, x2,y1, y2;
+
   for (const node of nodes) {
 
     const color = node.leadin ? themeLeadin : node.color;
 
-    // Draw node circle
+    for (const link of node.links) {
+      const d = link.destNode;
+      if (link != selectedLink)
+        drawArrow(node.x, node.y, d.x, d.y, color, 1);
+      else {
+        x1=node.x, x2=d.x, y1=node.y, y2=d.y;
+      }
+    }
+  }
+
+  if (selectedLink)
+    drawArrow(x1, y1, x2, y2, '#999', 1);
+
+  // draw nodes
+
+  for (const node of nodes) {
+
+    const color = node.leadin ? themeLeadin : node.color;
+
+    // draw node circle
     ctx.beginPath();
     ctx.arc(node.x, node.y, node.size, 0, Math.PI * 2);
     ctx.fillStyle = color;
     ctx.fill();
 
-    // Draw gate dot
+    // draw gate dot
     if (node.gated) {
       ctx.beginPath();
       ctx.arc(node.x, node.y, 3, 0, Math.PI * 2);
@@ -70,12 +95,7 @@ function redrawCanvas() {
       ctx.fill();
     }
 
-    // Draw links
-    for (const link of node.links) {
-      drawArrow(node.x, node.y, link.x, link.y, color);
-    }
-
-    // Draw selection ring on top
+    // draw selection ring on top
     if (selectedNode) {
       ctx.beginPath();
       ctx.arc(selectedNode.x, selectedNode.y, selectedNode.size, 0, Math.PI * 2);
@@ -121,23 +141,37 @@ function pointerdownCanvas (e) {
   const y    = Math.max(0, e.clientY - rect.top);
 
   pointerdownNode = findNode(x,y);
+  if (!pointerdownNode)
+    pointerdownLink = findLink(x, y);
+
   pointerdownX    = x;
   pointerdownY    = y;
   pointerdownPri  = primaryModifier(e);
 
-  if (!pointerdownNode && pointerdownPri) { // create node
+  if (!pointerdownNode && !pointerdownLink && pointerdownPri) { // create node
     selectedNode = createNode(x, y);
     redrawCanvas();
     redrawInspectorNode();
   }
   else if (pointerdownNode) { // select node
     selectedNode = pointerdownNode;
+    selectedLink = null;
     redrawCanvas();
     redrawInspectorNode();
-    //  (JSON.stringify(selectedNode, null, 2));
+  }
+  else if (pointerdownLink) { // select link
+    selectedNode = null;
+    selectedLink = pointerdownLink;
+    redrawCanvas();
+    redrawInspectorLink();
   }
   else if (!pointerdownNode && selectedNode) { // clear selection
     selectedNode = null;
+    redrawCanvas();
+    redrawInspectorSettings();
+  }
+  else if (!pointerdownLink && selectedLink) { // clear selection
+    selectedLink = null;
     redrawCanvas();
     redrawInspectorSettings();
   }
@@ -160,15 +194,15 @@ function pointerupCanvas (e) {
   pointerupY    = y;
   pointerupPri  = primaryModifier(e);
 
-  if (pointerdownNode && pointerdownPri && pointerupNode && pointerupPri && pointerdownNode != pointerupNode && !pointerdownNode.links.includes(pointerupNode)) { // link to node 
-    pointerdownNode.links.push(pointerupNode);
+  if (pointerdownNode && pointerdownPri && pointerupNode && pointerupPri && pointerdownNode != pointerupNode && nodeIsLinkedTo(pointerdownNode, pointerupNode) == -1) { // link to node 
+    pointerdownNode.links.push(createLink(pointerupNode));
     redrawCanvas();
   }
 
   else if (pointerdownNode && pointerdownPri && !pointerupNode && pointerupPri) { // create node and link
     selectedNode = createNode(x, y);
     pointerupNode = selectedNode;
-    pointerdownNode.links.push(pointerupNode);
+    pointerdownNode.links.push(createLink(pointerupNode));
     redrawCanvas();
     redrawInspectorNode();
   }

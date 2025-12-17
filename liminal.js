@@ -155,8 +155,8 @@ function scheduleNextOr(now, note) {
   if (lastNode.links.length == 0)
     return;
 
-  const r        = Math.floor(Math.random() * lastNode.links.length);
-  const nextNode = lastNode.links[r];
+  const r        = selectWeightedLink(lastNode);
+  const nextNode = lastNode.links[r].destNode;
   const nextNote = getIdleNote();
       
   if (nextNote) {

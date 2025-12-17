@@ -161,3 +161,29 @@ function redrawInspectorNode() {
   });
   
 }
+
+function redrawInspectorLink() {
+
+  setText('inspector-title', 'link');
+
+  row1Container.innerHTML = '';
+  row2Container.innerHTML = '';
+  row3Container.innerHTML = '';
+  row4Container.innerHTML = '';
+
+  const link = selectedLink;
+
+  if (!link)
+    return;
+
+  const weightLinkKnob = new Knob(row1Container, 'weight-link-knob', {
+    label: 'WEIGHT',
+    indicatorColor: themeNodeKnob,
+    min: 1,
+    max: 10,
+    value: link.weight,
+    defaultValue: 1,
+    onChange: (v) => { link.weight = v; redrawCanvas(); }
+  });
+  
+}
