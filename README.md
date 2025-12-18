@@ -4,6 +4,8 @@ Web midi sequencer. In development. Progress cached here. Not released. But clic
 
 https://op12no2.github.io/liminal/liminal.html
 
+But it's about to morph into somehting based around musical set theory...
+
 ### Notes
 
 Liminal communicates with DAWs using Web MIDI. Currently it uses the first output port it finds. If successful the MIDI indicator will be on (5 pin DIN icon). When it's off, you can click it to try again or refresh the page. On Windows (at least) you'll get an alert that you need to allow.  
