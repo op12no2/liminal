@@ -4,7 +4,7 @@ Web midi sequencer. In development. Progress cached here. Not released. But clic
 
 https://op12no2.github.io/liminal/liminal.html
 
-But it's about to morph into somehting based around musical set theory...
+But it's about to morph into something based around musical set theory...
 
 ### Notes
 
