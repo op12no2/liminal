@@ -1,5 +1,7 @@
 function seqStart() {
 
+  setStatus('');
+
   if (running || nodes.length == 0)
     return;
 
@@ -88,56 +90,55 @@ function seqLoop() {
   
   }
   
-  const now = audioContext.currentTime;
+  const now    = audioContext.currentTime;
+  let allQuiet = false;
 
-  for (let i=0; i < NODE_POOL; i++) {
+  while (!allQuiet) {
 
-    const n = notes[i];
+    allQuiet = true;
 
-    if (n.state == IDLE)
-      continue;
+    for (let i=0; i < NODE_POOL; i++) {
+      
+      const note  = notes[i];
 
-    if (n.state == GATED) {
-            
-      if (n.finishAt <= now) {
-      
-        midiNoteOff(n.chan, n.pitch, 0);
-      
-        n.state      = RESTING;
-        n.node.gated = false;
-      
-      }
-          
-    }
+      if (note.state == IDLE)
+        continue;
 
-    if (n.state == SCHEDULED) {
-            
-      if (n.startAt <= now) {
-      
-        midiNoteOn(n.chan, n.pitch, n.vel);
-      
-        n.state      = GATED;
-        n.node.gated = true;
-      
+      if (note.state == GATED && note.finishAt <= now) {
+        //console.log(now, 'GATED -> RESTING', note.finishAt);
+        midiNoteOff(note.chan, note.pitch, 0);
+        note.state      = RESTING;
+        allQuiet        = false;
+        note.node.gated = false;
       }
       
-    }
-
-    if (n.state == RESTING) {
-            
-      if (n.restUntil <= now) {
-      
-        n.state = PLAYED;
-      
+      if (note.state == SCHEDULED && note.startAt <= now) {
+        if (note.node.gated) {
+          //console.log(now, 'SCHEDULED -> MUTED');
+          note.state = IDLE;
+        }
+        else {
+          //console.log(now, 'SCHEDULED -> GATED');
+          midiNoteOn(note.chan, note.pitch, note.vel);
+          note.state      = GATED;
+          allQuiet        = false;
+          note.node.gated = true;
+        }  
       }
       
-    }
-
-    if (n.state == PLAYED) {
+      if (note.state == RESTING && note.restUntil <= now) {
+        //console.log(now, 'RESTING -> PLAYED');
+        note.state = PLAYED;
+        allQuiet   = false;
+      }
       
-      n.state = IDLE;
-      scheduleNextOr(now, n);
-
+      if (note.state == PLAYED) {
+        //console.log(now, 'PLAYED -> IDLE');
+        scheduleNextAnd(now, note);
+        scheduleNextOr(now, note);
+        note.state = IDLE;
+        allQuiet   = false;
+      }
     }
   }
 
@@ -155,7 +156,11 @@ function scheduleNextOr(now, note) {
   if (lastNode.links.length == 0)
     return;
 
-  const r        = selectWeightedLink(lastNode);
+  const r = selectWeightedLink(lastNode);
+
+  if (r == -1)
+    return;
+  
   const nextNode = lastNode.links[r].destNode;
   const nextNote = getIdleNote();
       
@@ -169,6 +174,29 @@ function scheduleNextOr(now, note) {
   }
 }
 
+function scheduleNextAnd(now, note) {
+
+  const lastNode = note.node;
+
+  for (const link of lastNode.links) {
+
+    if (link.weight == WEIGHT_ALWAYS) {
+
+      const nextNode = link.destNode;
+      const nextNote = getIdleNote();
+    
+      if (nextNote) {
+      
+        nextNote.state = SCHEDULED;
+        nextNote.node  = nextNode;
+      
+        performNode(now, nextNode, nextNote);
+      
+      }
+    }
+  }  
+}  
+
 function getIdleNote() {
 
   for (let i=0; i < NODE_POOL; i++) {
@@ -178,6 +206,8 @@ function getIdleNote() {
     }
 
   }
+
+  setStatus('note overflow');
 
   return null;
 

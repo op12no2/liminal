@@ -179,10 +179,11 @@ function redrawInspectorLink() {
   const weightLinkKnob = new Knob(row1Container, 'weight-link-knob', {
     label: 'WEIGHT',
     indicatorColor: themeNodeKnob,
-    min: 1,
-    max: 10,
+    min: 0,
+    max: 11,
     value: link.weight,
     defaultValue: 1,
+    stepLabels: weightLabels,
     onChange: (v) => { link.weight = v; redrawCanvas(); }
   });
   

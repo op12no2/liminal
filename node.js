@@ -35,7 +35,9 @@ function selectWeightedLink(node) {
   // Calculate total weight
   let totalWeight = 0;
   for (const link of node.links) {
-    totalWeight += link.weight;
+    if (link.weight > WEIGHT_NEVER && link.weight < WEIGHT_ALWAYS) {
+      totalWeight += link.weight;
+    }  
   }
 
   // Pick random value in range [0, totalWeight)
@@ -43,15 +45,17 @@ function selectWeightedLink(node) {
 
   // Find which link this falls into
   let cumulative = 0;
-  for (let i = 0; i < node.links.length; i++) {
-    cumulative += node.links[i].weight;
-    if (rand < cumulative) {
-      return i;
-    }
+  for (let i=0; i < node.links.length; i++) {
+    const link = node.links[i];
+    if (link.weight > WEIGHT_NEVER && link.weight < WEIGHT_ALWAYS) {
+      cumulative += link.weight;
+      if (rand < cumulative) {
+        return i;
+      }
+    }  
   }
 
-  // Fallback (shouldn't reach here)
-  return node.links.length - 1;
+  return -1;
 
 }
 
