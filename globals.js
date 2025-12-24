@@ -8,7 +8,7 @@ const ALG_RANDOM  = 0;
 const ALG_NEAREST = 1;
 
 const BTN_SIZE      = 36;
-const NODE_POOL     = 8;
+const NODE_POOL     = 16;
 const DEF_KEY       = 0;
 const DEF_SCALE     = 0;
 const DEF_BPM       = 60;

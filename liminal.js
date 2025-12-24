@@ -2,7 +2,7 @@ function seqStart() {
 
   setStatus('');
 
-  if (running || nodes.length == 0)
+  if (running || nodes.length == 0) 
     return;
 
   if (!audioContext) {
@@ -23,6 +23,7 @@ function seqStart() {
 
   for (let i=0; i < nodes.length; i++) {
     const node = nodes[i];
+    node.gated = false;
     if (node.leadin) {
       const note = notes[numLeadins++];
       note.state = SCHEDULED;

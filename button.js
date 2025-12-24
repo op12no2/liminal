@@ -72,6 +72,10 @@ class Button {
         return this.createMidiIcon(center, scale);
       case 'help':
         return this.createHelpIcon(center, scale);
+      case 'download':
+        return this.createDownloadIcon(center, scale);
+      case 'open':
+        return this.createOpenIcon(center, scale);
       default:
         return '';
     }
@@ -80,7 +84,7 @@ class Button {
   createCogIcon(center, scale) {
     // Cog with 8 teeth
     const innerRadius = 3.5 * scale;
-    const outerRadius = 5.5 * scale;
+    const outerRadius = 6.5 * scale;
     const toothWidth = 0.6 * scale;
     const numTeeth = 8;
 
@@ -158,7 +162,7 @@ class Button {
 
   createMidiIcon(center, scale) {
     // 5-pin DIN connector - simple circle with 5 pins
-    const circleRadius = 5.5 * scale;
+    const circleRadius = 6.5 * scale;
     const pinRadius = 0.9 * scale;
 
     // Pin positions in a semicircle (5 pins) - bottom half
@@ -186,7 +190,7 @@ class Button {
 
   createHelpIcon(center, scale) {
     // Question mark with circular background
-    const fontSize = 14 * scale;
+    const fontSize = 13 * scale;
     const yOffset = 1.5 * scale; // Adjust vertical position
 
     return `
@@ -205,6 +209,70 @@ class Button {
               dominant-baseline="middle">?</text>
       </g>
     `;
+  }
+
+  createDownloadIcon(center, scale) {
+    // Download arrow with tray
+    return `
+      <g class="btn-icon">
+        <!-- Arrow shaft -->
+        <rect x="${center - 1.5*scale}" y="${center - 6*scale}"
+              width="${3*scale}" height="${8*scale}" rx="${0.5*scale}"
+              fill="${this.offColor}" />
+        
+        <!-- Arrow head (pointing down) -->
+        <path d="M ${center - 5*scale} ${center + 1*scale}
+                 L ${center} ${center + 6*scale}
+                 L ${center + 5*scale} ${center + 1*scale} Z"
+              fill="${this.offColor}" />
+        
+        <!-- Tray at bottom -->
+        <path d="M ${center - 6*scale} ${center + 6.5*scale}
+                 L ${center - 6*scale} ${center + 7.5*scale}
+                 Q ${center - 6*scale} ${center + 8.5*scale} ${center - 5*scale} ${center + 8.5*scale}
+                 L ${center + 5*scale} ${center + 8.5*scale}
+                 Q ${center + 6*scale} ${center + 8.5*scale} ${center + 6*scale} ${center + 7.5*scale}
+                 L ${center + 6*scale} ${center + 6.5*scale}"
+              fill="${this.offColor}" stroke="none" />
+      </g>
+    `;
+  }
+
+  createOpenIcon(center, scale) {
+
+  // Network graph: 3 nodes in triangle with connecting lines
+  const nodeRadius = 2.3 * scale;
+  const spacing = 7 * scale;
+  const yOffset = 2 * scale;  // Adjust this value to move up/down
+  
+  // Calculate triangle vertices
+  const topY = center - spacing * 0.866 + yOffset;
+  const bottomY = center + spacing * 0.433 + yOffset;
+  const leftX = center - spacing * 0.7;
+  const rightX = center + spacing * 0.7;
+
+  return `
+    <g class="btn-icon">
+      <!-- Connecting lines -->
+      <line x1="${center}" y1="${topY}"
+            x2="${leftX}" y2="${bottomY}"
+            stroke="${this.offColor}" stroke-width="${scale}" stroke-linecap="round" />
+      <line x1="${center}" y1="${topY}"
+            x2="${rightX}" y2="${bottomY}"
+            stroke="${this.offColor}" stroke-width="${scale}" stroke-linecap="round" />
+      <line x1="${leftX}" y1="${bottomY}"
+            x2="${rightX}" y2="${bottomY}"
+            stroke="${this.offColor}" stroke-width="${scale}" stroke-linecap="round" />
+      
+      <!-- Nodes (circles) -->
+      <circle cx="${center}" cy="${topY}"
+              r="${nodeRadius}" fill="${this.offColor}" />
+      <circle cx="${leftX}" cy="${bottomY}"
+              r="${nodeRadius}" fill="${this.offColor}" />
+      <circle cx="${rightX}" cy="${bottomY}"
+              r="${nodeRadius}" fill="${this.offColor}" />
+    </g>
+  `;
   }
 
   attachEvents() {
@@ -326,6 +394,3 @@ class Button {
   }
 
 }
-
-
-

@@ -13,6 +13,14 @@ const btnSettings = new Button({ icon: 'cog', color: themeSettingsKnob, size: BT
 document.getElementById('btn-settings').appendChild(btnSettings.render());
 btnSettings.turnOn();
 
+const btnOpen = new Button({ icon: 'open', color: themeFileKnob, size: BTN_SIZE, onClick: loadFromFile });
+document.getElementById('btn-open').appendChild(btnOpen.render());
+btnOpen.turnOn();
+
+const btnSave = new Button({ icon: 'download', color: themeFileKnob, size: BTN_SIZE, onClick: saveToFile });
+document.getElementById('btn-save').appendChild(btnSave.render());
+btnSave.turnOn();
+
 const btnHelp = new Button({icon: 'help', size: BTN_SIZE, color: themeButton, onClick: () => {
   window.open('https://github.com/op12no2/liminal', '_blank');
 }});
