@@ -99,7 +99,7 @@ function saveToFile() {
     
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'liminal.json';  // default filename for now
+  a.download = selectedFilename + '.json';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -116,7 +116,10 @@ function loadFromFile () {
   input.onchange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-      
+
+    // Extract filename without extension
+    selectedFilename = file.name.replace(/\.json$/i, '');
+
     const reader = new FileReader();
     reader.onload = (event) => {
       try {

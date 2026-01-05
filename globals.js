@@ -136,6 +136,7 @@ let selectedSpread   = 0;
 let selectedNode     = null;
 let selectedLink     = null;
 let selectedBpm      = DEF_BPM;
+let selectedFilename = 'liminal';
 
 let audioContext = null;
 

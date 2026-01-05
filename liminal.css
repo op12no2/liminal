@@ -152,3 +152,27 @@ canvas:focus {
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
 }
 
+.filename-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.filename-input {
+  background: var(--panel-dark);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-light);
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  padding: 6px 10px;
+  width: 180px;
+  margin-top: 4px;
+  text-align: center;
+}
+
+.filename-input:focus {
+  outline: none;
+  border-color: #555;
+}
+

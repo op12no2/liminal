@@ -60,7 +60,17 @@ function redrawInspectorSettings() {
     defaultValue: 0,
     onChange: (v) => { selectedDynamics = v; redrawCanvas(); }
   });
-  
+
+  row4Container.innerHTML = `
+    <div class="filename-container">
+      <div class="knob-label">FILENAME</div>
+      <input type="text" id="filename-input" class="filename-input" value="${selectedFilename}">
+    </div>
+  `;
+  document.getElementById('filename-input').addEventListener('input', (e) => {
+    selectedFilename = e.target.value || 'liminal';
+  });
+
 }
 
 function redrawInspectorNode() {
