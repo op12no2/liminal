@@ -10,9 +10,10 @@ function seqStart() {
     audioContext.resume();
   }
 
-  activeBpm = 0;
-  loopSum   = 0;
-  loopNum   = 0;
+  finishTime = 0;
+  activeBpm  = 0;
+  loopSum    = 0;
+  loopNum    = 0;
 
   for (let i=0; i < NODE_POOL; i++) {
     notes[i].state = IDLE;
@@ -93,6 +94,7 @@ function seqLoop() {
   
   const now    = audioContext.currentTime;
   let allQuiet = false;
+  let iters    = 0;
 
   while (!allQuiet) {
 
@@ -100,7 +102,7 @@ function seqLoop() {
 
     for (let i=0; i < NODE_POOL; i++) {
       
-      const note  = notes[i];
+      const note = notes[i];
 
       if (note.state == IDLE)
         continue;
@@ -111,6 +113,7 @@ function seqLoop() {
         note.state      = RESTING;
         allQuiet        = false;
         note.node.gated = false;
+        iters++;
       }
       
       if (note.state == SCHEDULED && note.startAt <= now) {
@@ -124,6 +127,7 @@ function seqLoop() {
           note.state      = GATED;
           allQuiet        = false;
           note.node.gated = true;
+          iters++;
         }  
       }
       
@@ -131,6 +135,7 @@ function seqLoop() {
         //console.log(now, 'RESTING -> PLAYED');
         note.state = PLAYED;
         allQuiet   = false;
+        iters++;
       }
       
       if (note.state == PLAYED) {
@@ -139,6 +144,7 @@ function seqLoop() {
         scheduleNextOr(now, note);
         note.state = IDLE;
         allQuiet   = false;
+        iters++;
       }
     }
   }
@@ -148,6 +154,14 @@ function seqLoop() {
   loopSum += ((audioContext.currentTime - now) * 1000) / budget;
   loopNum++;
 
+  if (iters == 0 && finishTime && (now - finishTime) > FINISH_SAFELY_TIME) {
+    seqStop();
+    seqStart()
+  }
+  else if (iters == 0 && finishTime == 0)
+    finishTime = now;
+  else if (iters)
+    finishTime = 0;
 }
 
 function scheduleNextOr(now, note) {

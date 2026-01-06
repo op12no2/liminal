@@ -7,13 +7,14 @@ const PLAYED    = 4;
 const ALG_RANDOM  = 0;
 const ALG_NEAREST = 1;
 
-const BTN_SIZE      = 36;
-const NODE_POOL     = 16;
-const DEF_KEY       = 0;
-const DEF_SCALE     = 0;
-const DEF_BPM       = 60;
-const WEIGHT_ALWAYS = 11;
-const WEIGHT_NEVER  = 0;
+const BTN_SIZE           = 36;
+const NODE_POOL          = 16;
+const DEF_KEY            = 0;
+const DEF_SCALE          = 0;
+const DEF_BPM            = 60;
+const WEIGHT_ALWAYS      = 11;
+const WEIGHT_NEVER       = 0;
+const FINISH_SAFELY_TIME = 2.5;
 
 const algLabels   = [
   'random',
@@ -128,6 +129,7 @@ let interval    = null;
 let budget      = 0;
 let loopSum     = 0.0;
 let loopNum     = 0;
+let finishTime  = 0;
 
 let selectedScale    = DEF_SCALE;
 let selectedKey      = DEF_KEY;
