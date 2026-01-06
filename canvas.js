@@ -231,9 +231,9 @@ function pointermoveCanvas (e) {
 }
 
 function keydownCanvas(e) {
-  
+
   if (e.key === 'Delete' || e.key === 'Backspace') {
-    
+
     if (selectedNode) {
       const x = selectedNode.x;
       const y = selectedNode.y;
@@ -242,6 +242,25 @@ function keydownCanvas(e) {
       redrawCanvas();
       if (selectedNode)
         redrawInspectorNode();
+      else
+        redrawInspectorSettings();
+    }
+    else if (selectedLink) {
+      // Find midpoint of link before deleting
+      let x = selectedLink.destNode.x;
+      let y = selectedLink.destNode.y;
+      for (const node of nodes) {
+        if (node.links.indexOf(selectedLink) !== -1) {
+          x = (node.x + selectedLink.destNode.x) / 2;
+          y = (node.y + selectedLink.destNode.y) / 2;
+          break;
+        }
+      }
+      deleteLink(selectedLink);
+      selectedLink = findLink(x, y, 100000);
+      redrawCanvas();
+      if (selectedLink)
+        redrawInspectorLink();
       else
         redrawInspectorSettings();
     }

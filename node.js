@@ -175,7 +175,7 @@ function performNode (now, node, note) {
 }
 
 function deleteNode(node) {
-  
+
   // Remove this node from any other node's links
   for (const n of nodes) {
     const index = nodeIsLinkedTo(n, node);
@@ -183,11 +183,22 @@ function deleteNode(node) {
       n.links.splice(index, 1);
     }
   }
-  
+
   // Remove the node itself from the nodes array
   const nodeIndex = nodes.indexOf(node);
   if (nodeIndex !== -1) {
     nodes.splice(nodeIndex, 1);
+  }
+}
+
+function deleteLink(link) {
+
+  for (const node of nodes) {
+    const index = node.links.indexOf(link);
+    if (index !== -1) {
+      node.links.splice(index, 1);
+      return;
+    }
   }
 }
 
