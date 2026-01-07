@@ -107,13 +107,14 @@ function seqLoop() {
       if (note.state == IDLE)
         continue;
 
+      iters++;
+      
       if (note.state == GATED && note.finishAt <= now) {
         //console.log(now, 'GATED -> RESTING', note.finishAt);
         midiNoteOff(note.chan, note.pitch, 0);
         note.state      = RESTING;
         allQuiet        = false;
         note.node.gated = false;
-        iters++;
       }
       
       if (note.state == SCHEDULED && note.startAt <= now) {
@@ -127,7 +128,6 @@ function seqLoop() {
           note.state      = GATED;
           allQuiet        = false;
           note.node.gated = true;
-          iters++;
         }  
       }
       
@@ -135,7 +135,6 @@ function seqLoop() {
         //console.log(now, 'RESTING -> PLAYED');
         note.state = PLAYED;
         allQuiet   = false;
-        iters++;
       }
       
       if (note.state == PLAYED) {
@@ -144,7 +143,6 @@ function seqLoop() {
         scheduleNextOr(now, note);
         note.state = IDLE;
         allQuiet   = false;
-        iters++;
       }
     }
   }
